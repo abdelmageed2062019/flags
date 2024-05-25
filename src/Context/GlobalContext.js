@@ -14,7 +14,7 @@ export const GlobalStorage = ({ children }) => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
-  //fetch all location data and render on home
+  //Fetch  all location data and render on home
   useEffect(() => {
     const theme = localStorage.getItem("theme");
     setDarkTheme(theme);
@@ -36,18 +36,24 @@ export const GlobalStorage = ({ children }) => {
     fetchData();
   }, []);
 
-  // Filter data based on search term
+  // Filter data based on search term and region
   useEffect(() => {
-    if (search && search.length > 3) {
-      const filtered = data.filter((item) =>
+    let filtered = data;
+
+    if (region !== "all") {
+      filtered = filtered.filter(
+        (item) => item.region.toLowerCase() === region.toLowerCase()
+      );
+    }
+
+    if (search.length > 3) {
+      filtered = filtered.filter((item) =>
         item.name.toLowerCase().includes(search.toLowerCase())
       );
-      console.log(filtered);
-      setFilteredData(filtered);
-    } else {
-      setFilteredData(data);
     }
-  }, [search, data]);
+
+    setFilteredData(filtered);
+  }, [search, region, data]);
 
   //set theme to localstorage on render
   useEffect(() => {
@@ -65,6 +71,9 @@ export const GlobalStorage = ({ children }) => {
         setLoading,
         darkTheme,
         setDarkTheme,
+        openFilter,
+        setOpenFilter,
+        setRegion,
       }}
     >
       {children}
