@@ -7,7 +7,7 @@ import Filter from "./Filter/Index";
 import Item from "./Item/Index";
 
 const Home = () => {
-  const { data, loading, darkTheme } = useContext(GlobalContext);
+  const { loading, darkTheme, filteredData } = useContext(GlobalContext);
 
   return (
     <>
@@ -27,7 +27,7 @@ const Home = () => {
             <div className={styles.loader}></div>
           ) : (
             <div className={styles.items}>
-              {data.map((item) => {
+              {filteredData.map((item) => {
                 return (
                   <Item
                     key={item.name}

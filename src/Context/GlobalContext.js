@@ -7,6 +7,7 @@ export const GlobalContext = createContext();
 export const GlobalStorage = ({ children }) => {
   const [openFilter, setOpenFilter] = useState(false);
   const [data, setData] = useState([]);
+  const [filteredData, setFilteredData] = useState([]);
   const [region, setRegion] = useState("all");
   const [search, setSearch] = useState("");
   const [darkTheme, setDarkTheme] = useState(null);
@@ -35,13 +36,36 @@ export const GlobalStorage = ({ children }) => {
     fetchData();
   }, []);
 
+  // Filter data based on search term
+  useEffect(() => {
+    if (search && search.length > 3) {
+      const filtered = data.filter((item) =>
+        item.name.toLowerCase().includes(search.toLowerCase())
+      );
+      console.log(filtered);
+      setFilteredData(filtered);
+    } else {
+      setFilteredData(data);
+    }
+  }, [search, data]);
+
+  //set theme to localstorage on render
   useEffect(() => {
     localStorage.setItem("theme", darkTheme);
   }, [darkTheme]);
 
   return (
     <GlobalContext.Provider
-      value={{ data, loading, setLoading, darkTheme, setDarkTheme }}
+      value={{
+        search,
+        setSearch,
+        filteredData,
+        data,
+        loading,
+        setLoading,
+        darkTheme,
+        setDarkTheme,
+      }}
     >
       {children}
     </GlobalContext.Provider>
