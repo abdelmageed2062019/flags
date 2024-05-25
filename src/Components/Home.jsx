@@ -7,11 +7,15 @@ import Filter from "./Filter/Index";
 import Item from "./Item/Index";
 
 const Home = () => {
-  const { data } = useContext(GlobalContext);
+  const { data, loading, darkTheme } = useContext(GlobalContext);
 
   return (
     <>
-      <main className={styles.main}>
+      <main
+        className={`${styles.main} ${
+          darkTheme ? styles.mainDark : styles.mainLight
+        }`}
+      >
         <Header />
         <div className={styles.container}>
           <div className={styles.search}>
@@ -19,9 +23,25 @@ const Home = () => {
             <Filter />
           </div>
 
-          <div className={styles.items}>
-            <Item />
-          </div>
+          {loading ? (
+            <div className={styles.loader}></div>
+          ) : (
+            <div className={styles.items}>
+              {data.map((item) => {
+                return (
+                  <Item
+                    key={item.name}
+                    name={item.name}
+                    alpha={item.alpha2Code}
+                    population={item.population}
+                    region={item.region}
+                    capital={item.capital}
+                    flag={item.flags.svg}
+                  />
+                );
+              })}
+            </div>
+          )}
         </div>
       </main>
     </>

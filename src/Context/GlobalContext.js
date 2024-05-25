@@ -9,22 +9,41 @@ export const GlobalStorage = ({ children }) => {
   const [data, setData] = useState([]);
   const [region, setRegion] = useState("all");
   const [search, setSearch] = useState("");
-  const [darkTheme, setDarkTheme] = useState(false);
+  const [darkTheme, setDarkTheme] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
 
   //fetch all location data and render on home
   useEffect(() => {
-    async function fetchData() {
-      const response = await fetch("https://restcountries.com/v2/all");
-      const data = await response.json();
-      setData(data);
-      setLoading(false);
-    }
+    const theme = localStorage.getItem("theme");
+    setDarkTheme(theme);
+    const fetchData = async () => {
+      try {
+        const response = await fetch("/data.json");
+        if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        const data = await response.json();
+        setData(data);
+      } catch (error) {
+        setError(error.message);
+      } finally {
+        setLoading(false);
+      }
+    };
 
     fetchData();
   }, []);
 
+  useEffect(() => {
+    localStorage.setItem("theme", darkTheme);
+  }, [darkTheme]);
+
   return (
-    <GlobalContext.Provider value={{ data }}>{children}</GlobalContext.Provider>
+    <GlobalContext.Provider
+      value={{ data, loading, setLoading, darkTheme, setDarkTheme }}
+    >
+      {children}
+    </GlobalContext.Provider>
   );
 };
